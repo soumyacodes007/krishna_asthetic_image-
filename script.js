@@ -1,12 +1,13 @@
-// lord krishna animation 
-
 let img;
 let testImg;
 let points = [];
 const numPoints = 15000;
+let song;
+let started = false;
 
 function preload() {
-  img = loadImage("./krishna.jpg");
+  img = loadImage("krishna.jpg");
+  song = loadSound("music.mp3"); // your music file
 }
 
 function setup() {
@@ -25,27 +26,37 @@ function setup() {
   for (let i = 0; i < numPoints; i++) {
     points.push(createVector(random(width), random(height)));
   }
+
+  noLoop(); // wait for user interaction
+  let btn = document.getElementById("startButton");
+  btn.addEventListener("click", () => {
+    if (!started) {
+      song.loop();
+      started = true;
+      loop(); // start drawing
+      btn.remove(); // hide button
+    }
+  });
 }
 
 function draw() {
   background(0, 10);
-  
+
   for (let i = 0; i < points.length; i++) {
     let p = points[i];
-    
     let angle = noise(p.x * 0.005, p.y * 0.005, frameCount * 0.01) * TWO_PI * 2;
     let speed = noise(p.x * 0.005, p.y * 0.005, frameCount * 0.01 + 1000) * 2;
-    
+
     let newX = p.x + cos(angle) * speed;
     let newY = p.y + sin(angle) * speed;
-    
+
     let c = testImg.get(int(p.x), int(p.y));
     stroke(c);
     strokeWeight(0.5);
     line(p.x, p.y, newX, newY);
-    
+
     points[i].set(newX, newY);
-    
+
     if (newX < 0 || newX > width || newY < 0 || newY > height) {
       points[i].set(random(width), random(height));
     }
